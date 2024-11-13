@@ -1,0 +1,6 @@
+@Barclays.GenAIHackathon.OpenAIWrapper_HostAddress = http://localhost:5252
+
+GET {{Barclays.GenAIHackathon.OpenAIWrapper_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
