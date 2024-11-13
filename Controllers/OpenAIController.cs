@@ -1,4 +1,5 @@
-﻿using Azure.AI.OpenAI;
+﻿using System;
+using Azure.AI.OpenAI;
 using Azure.AI.OpenAI.Chat;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,31 +13,39 @@ namespace Barclays.GenAIHackathon.OpenAIWrapper.Controllers
     {
         private readonly AzureOpenAIClient _client;
         private List<ChatMessage> _messages;
-        public OpenAIController(AzureOpenAIClient azureopenaiclient)
+        private readonly HttpClient _httpClient;
+        string schemaApiUrl = "http://localhost:5252/api/DatabaseSchema/TM_Trade";
+        public OpenAIController(AzureOpenAIClient azureopenaiclient, HttpClient httpClient)
         {
             _client = azureopenaiclient;
+            _httpClient = httpClient;
         }
 
         [HttpGet("generate-query")]
         public async Task<IActionResult> Get([FromQuery] string prompt)
         {
-            if(string.IsNullOrEmpty(prompt))
+            if (string.IsNullOrEmpty(prompt))
             {
                 return BadRequest("Prompt is required.");
             }
 
             try
             {
+                HttpResponseMessage response = await _httpClient.GetAsync(schemaApiUrl);
+                string responseData = string.Empty;
+                // Check if the response is successful (2xx status code)
+                if (response.IsSuccessStatusCode)
+                {
+                    responseData = await response.Content.ReadAsStringAsync();
+                }
                 _messages = new List<ChatMessage>
                 {
-                    
-                };
-                _messages.Add(ChatMessage.CreateSystemMessage(new ChatMessageContent("You are an assistant helping to filter data from the 'Trades' Table." +
-                    " The table has the following columns : TradeId (long), TradeDate (datetime) , SettlementDate (datetime), SourceTradeId (long) , SourceTradeSystem (nvarchar) , Trader(nvarchar), Quantity (decimal) , Fund (nvarchar) , Security(nvarchar)" +
-                "Your response should only contain SQL statement and no english part")));
 
-                
-                   //"Do not give any results if you do not understand the entity other than Trades.Just retrun 'NAN'"
+                };
+                _messages.Add(ChatMessage.CreateSystemMessage(new ChatMessageContent(responseData)));
+
+
+                //"Do not give any results if you do not understand the entity other than Trades.Just retrun 'NAN'"
 
 
                 _messages.Add(prompt);
