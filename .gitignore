@@ -6,3 +6,4 @@
 /.vs
 /obj
 /packages/Newtonsoft.Json.13.0.3
+/TradeClient/obj

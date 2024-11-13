@@ -1,0 +1,80 @@
+﻿@page "/Trades"
+@using MudBlazor
+@inject HttpClient Http
+
+<PageTitle>Dynamic Data Table</PageTitle>
+
+<MudTextField @bind-Value="inputText" Label="Enter Text" FullWidth="true" Margin="Margin.Normal" />
+<MudButton OnClick="LoadData" Color="Color.Primary" Variant="Variant.Filled" FullWidth="true">
+    Send to API
+</MudButton>
+
+<MudTable Items="@data" Hover="true">
+    <HeaderContent>
+        @foreach (var key in columnNames)
+        {
+            <MudTh>@key</MudTh>
+        }
+    </HeaderContent>
+    <RowTemplate>
+        @foreach (var key in columnNames)
+        {
+            <MudTd>@context[key]</MudTd>
+        }
+    </RowTemplate>
+</MudTable>
+
+@if (isLoading)
+{
+    <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <MudAlert Severity="Severity.Error">@errorMessage</MudAlert>
+}
+
+@code {
+    private List<Dictionary<string, object>> data = new List<Dictionary<string, object>>();
+    private List<string> columnNames = new List<string>();
+    private string inputText = string.Empty;  // Text input to send to the API
+    private bool isLoading = false;
+    private string errorMessage = string.Empty;
+
+    
+    private async Task LoadData()
+    {
+        if (string.IsNullOrEmpty(inputText))
+        {
+            errorMessage = "Please enter some text.";
+            return;
+        }
+        try
+        {
+            isLoading = true;
+            errorMessage = string.Empty;
+            string apiUrl = $"http://localhost:5252/OpenAI/generate-query?prompt={inputText}";
+            var response = await Http.GetFromJsonAsync<List<Dictionary<string, object>>>(apiUrl);
+
+            if (response != null && response.Any())
+            {
+                data = response;
+                columnNames = data.FirstOrDefault()?.Keys.ToList() ?? new List<string>();
+            }
+            else
+            {
+                errorMessage = "No data found.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Error fetching data: " + ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    
+}
