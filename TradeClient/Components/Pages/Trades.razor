@@ -9,7 +9,7 @@
     Send to API
 </MudButton>
 
-<MudTable Items="@data" Hover="true">
+<MudTable Items="@pagedData" Hover="true" Pageable="true" RowsPerPage="RowsPerPage" CurrentPage="CurrentPage" OnPageChanged="OnPageChanged">
     <HeaderContent>
         @foreach (var key in columnNames)
         {
@@ -24,6 +24,9 @@
     </RowTemplate>
 </MudTable>
 
+<MudPagination TotalItems="@totalItems" PageSize="RowsPerPage" PageChanged="OnPageChanged" />
+
+
 @if (isLoading)
 {
     <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
@@ -36,12 +39,17 @@
 
 @code {
     private List<Dictionary<string, object>> data = new List<Dictionary<string, object>>();
+    private List<Dictionary<string, object>> pagedData = new List<Dictionary<string, object>>();
     private List<string> columnNames = new List<string>();
-    private string inputText = string.Empty;  // Text input to send to the API
+    private string inputText = string.Empty;
     private bool isLoading = false;
     private string errorMessage = string.Empty;
 
-    
+    private int CurrentPage = 0; // Current page index (zero-based)
+    private int RowsPerPage = 5; // Number of rows per page
+    private int totalItems = 0;  // Total number of items
+
+
     private async Task LoadData()
     {
         if (string.IsNullOrEmpty(inputText))
@@ -60,6 +68,8 @@
             {
                 data = response;
                 columnNames = data.FirstOrDefault()?.Keys.ToList() ?? new List<string>();
+                totalItems = data.Count; // Update total number of items
+                UpdatePagedData(); // Update the paged data based on current page
             }
             else
             {
@@ -75,6 +85,16 @@
             isLoading = false;
         }
     }
+    private void UpdatePagedData()
+    {
+        // Calculate the paged data based on the current page and rows per page
+        pagedData = data.Skip(CurrentPage * RowsPerPage).Take(RowsPerPage).ToList();
+    }
 
+    private void OnPageChanged(int page)
+    {
+        CurrentPage = page;
+        UpdatePagedData(); // Update the paged data when the page changes
+    }
     
 }
