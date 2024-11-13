@@ -18,7 +18,7 @@ namespace Barclays.GenAIHackathon.OpenAIWrapper.Controllers
         }
 
         [HttpGet("generate-query")]
-        public async Task<IActionResult> GenerateQuery([FromQuery] string prompt)
+        public async Task<IActionResult> Get([FromQuery] string prompt)
         {
             if(string.IsNullOrEmpty(prompt))
             {
