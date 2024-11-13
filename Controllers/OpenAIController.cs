@@ -55,10 +55,12 @@ namespace Barclays.GenAIHackathon.OpenAIWrapper.Controllers
                 };
 
                 chatCpmpletionOptions.ResponseFormat = ChatResponseFormat.CreateJsonObjectFormat();
-                var completion = await _client.GetChatClient("gpt-35-turbo").CompleteChatAsync(_messages);//, chatCpmpletionOptions);
+                var completion = await _client.GetChatClient("gpt-4o").CompleteChatAsync(_messages);//, chatCpmpletionOptions);
 
+                DatabaseReadController db = new DatabaseReadController();
+                var dataresult = await db.Get(completion.Value.Content[0].Text.Trim('`').Replace("sql", string.Empty).Replace("\n", " ").Trim());
                 //var assistanceResponse = completion.Result.Value.Content;
-                return Ok(completion.Value.Content[0].Text);
+                return Ok(dataresult);
             }
             catch (Exception)
             {

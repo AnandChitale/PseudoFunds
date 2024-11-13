@@ -8,15 +8,14 @@ using Microsoft.Data.SqlClient;
 namespace Barclays.GenAIHackathon.OpenAIWrapper.Controllers
 {
 
-    [Route("api/[controller]")]
-    [ApiController]
-    public class DatabaseReadController : ControllerBase
+    
+    public class DatabaseReadController 
     {
         private string _connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\DRandhavan\source\repos\PseudoFunds\TradeManager.mdf;Integrated Security=True";
 
         // GET: api/<DatabaseReadController>
-        [HttpGet]
-        public async Task<IActionResult> Get(string query)
+        
+        public async Task<List<ExpandoObject>> Get(string query)
         {
             List<ExpandoObject> result = new List<ExpandoObject>();
 
@@ -51,33 +50,10 @@ namespace Barclays.GenAIHackathon.OpenAIWrapper.Controllers
                 }
             }
 
-            return Ok(result);  // Return as JSON
+            return result;  // Return as JSON
 
         }
 
-        // GET api/<DatabaseReadController>/5
-        [HttpGet("{ id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<DatabaseReadController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<DatabaseReadController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<DatabaseReadController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+       
     }
 }
