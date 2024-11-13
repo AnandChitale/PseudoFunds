@@ -25,7 +25,8 @@ namespace Barclays.GenAIHackathon.OpenAIWrapper.Controllers
 
             var promptBuilder = new StringBuilder();
             promptBuilder.AppendLine("You are an assistant that helps users query a database with a specific table and its related tables. " +
-                                     "Your role is to assist with queries involving data retrieval and filtering across these tables. Here is the database structure and relationships:");
+                                     "Your role is to assist with queries involving data retrieval and filtering across these tables. Here is the database structure and relationships:" +
+                                     "The result should only include sql statement.");
 
             foreach (var table in tables)
             {
